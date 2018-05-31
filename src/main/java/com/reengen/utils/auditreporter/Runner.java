@@ -1,25 +1,19 @@
 package com.reengen.utils.auditreporter;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+import com.erg.abst.cpaar.prepare.IParserStarter;
+import com.erg.cpaar.prepare.ParseStarter;
+import com.erg.abst.cpaar.prepare.IParserStarter;
 import com.reengen.model.auditreporter.RunnerModel;
 import com.reengen.model.auditreporter.RunnerModel.InputPaths;
-import com.reengen.model.auditreporter.RunnerModel.TopDisplay;
 
 
 public class Runner {
@@ -70,9 +64,18 @@ public class Runner {
 	}
 	
 	// ===========MAIN==============//
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		// initialization
-		
+
+		IParserStarter ps = new ParseStarter();
+		ps.addOption("--top",Integer.class,false)
+				.submit("ListTop")
+				.addFlag("-c")
+				.submit("IsCsvMode")
+				.parse(args);
+
+
+
 		Initialize(args);
 		Configure();
 		
@@ -106,6 +109,7 @@ public class Runner {
 
 	// sets and prepares arguments field
 	private static void Initialize(String[] args) {
+
 		// validation fields
 		boolean anyExtraCharacter = true;
 		boolean isEmpty = true;
