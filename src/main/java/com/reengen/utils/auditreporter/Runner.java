@@ -9,9 +9,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.erg.abst.cpaar.BareArgumentTypes;
 import com.erg.abst.cpaar.prepare.IParserStarter;
+import com.erg.cpaar.data.Outputs;
 import com.erg.cpaar.prepare.ParseStarter;
-import com.erg.abst.cpaar.prepare.IParserStarter;
 import com.reengen.model.auditreporter.RunnerModel;
 import com.reengen.model.auditreporter.RunnerModel.InputPaths;
 
@@ -32,7 +33,7 @@ public class Runner {
 
 	// translated commandline arguments
 	private static List<String> arguments = new ArrayList<String>();
-	
+
 	//filtering order
 	private static int topFilterThreshold;
 
@@ -50,35 +51,26 @@ public class Runner {
 
 	// for filterable txt reports // !!Caution, print orders different
 	public Runner(boolean mode1, boolean mode2) throws IOException {
-		
+
 		loadData(paths.getUserPath(), paths.getFilesPath());
 		this.run(true, true);
 		// run(true,true);
 	}
-	
-	// for filter mode tables csv reports 
+
+	// for filter mode tables csv reports
 	public Runner(boolean mode1, boolean mode2, boolean mode3) throws IOException{
-		
+
 		loadData(paths.getUserPath(), paths.getFilesPath());
 		this.run(true, true, true);
 	}
-	
+
 	// ===========MAIN==============//
 	public static void main(String[] args) throws Exception {
 		// initialization
 
-		IParserStarter ps = new ParseStarter();
-		ps.addOption("--top",Integer.class,false)
-				.submit("ListTop")
-				.addFlag("-c")
-				.submit("IsCsvMode")
-				.parse(args);
-
-
-
 		Initialize(args);
 		Configure();
-		
+
 		// normal mode
 		if (Runner.RunnerEnums.RunModeTypes.txtMode && Runner.RunnerEnums.RunModeTypes.nonFilterMode) { //
 			Runner r = new Runner();
@@ -108,7 +100,16 @@ public class Runner {
 	// for validation cases
 
 	// sets and prepares arguments field
-	private static void Initialize(String[] args) {
+	private static void Initialize(String[] args) throws Exception {
+
+		IParserStarter ps = new ParseStarter();
+		ps.addOption("--top",Integer.class,false)
+				.submit("TopDisplay")
+				.addFlag("-c")
+				.submit("IsCsvMode")
+				.parse(args);
+
+
 
 		// validation fields
 		boolean anyExtraCharacter = true;
@@ -156,7 +157,7 @@ public class Runner {
 			if (isNumeric) {
 				topFilterThreshold = Integer.parseInt(args[i]);
 			}
-			
+
 			isOption = args[i].equals("--top") || args[i].equals("-c") ? true : false;
 			isUndefined = (isPath || isNumeric ? false : true) && (isOption || isEmptyOrNull ? false : true);
 			if (isUndefined == true) {
@@ -164,12 +165,33 @@ public class Runner {
 				System.out.println(
 						"ERROR!!..Undefined input format.. /n" + "only paths numbers and -c , --top flags are defined");
 			} else {
-				
+
 				arguments.add(args[i].toString());
 			}
 		}
 	}
 
+	// sets and prepares arguments field using cpaar library
+	private static void InitializeWithCpar(String[] args) throws Exception {
+		IParserStarter ps = new ParseStarter();
+		ps.addOption("--top",Integer.class,false)
+				.submit("ListTop")
+				.addFlag("-c")
+				.submit("IsCsvMode")
+				.add(String.class, BareArgumentTypes.path)
+				.submit("ResourcePaths")
+				.parse(args);
+	}
+
+	private static void ConfigureWithCpar(){
+
+        if(Outputs.options.containsKey("ListTop")){
+            RunnerEnums.RunModeTypes.setfilterMode(true);
+        }
+        if(Outputs.flags.containsKey("IsCsvMode")){
+            RunnerEnums.RunModeTypes.setCsvMode(true);
+        }
+	}
 	// stores initial conditions // boolean switches are managed here
 	private static void Configure() {
 		// path info carriying obhect
@@ -219,7 +241,7 @@ public class Runner {
 	}
 	// loads for filter display model-dto data
 
-	//* loads ui model data for ui filtering option 
+	//* loads ui model data for ui filtering option
 	private void loadData(boolean mode1, boolean mode2, boolean yedek) {
 		DisplayModelData = new LinkedList<RunnerModel.TopDisplay>();
 		for (List<String> userRow : users) {
@@ -235,7 +257,7 @@ public class Runner {
 					DisplayModelData.add(td);
 				}
 			}
-		}		
+		}
 	}
 
 	//loads users files
@@ -274,7 +296,7 @@ public class Runner {
 				reader.close();
 			}
 		}
-		
+
 		// i chosed to read stream from the same method to fill the model object
 		if (isTopModelDataLoad) {
 			RunnerModel.TopDisplay topDisplayPoco;
@@ -373,7 +395,7 @@ public class Runner {
 		for (int i = 0; i < topOrder; i++) { // toporder is a global
 			sublist.add(DisplayModelData.get(i));
 		}
-		
+
 		return sublist;
 	}
 
@@ -392,12 +414,12 @@ public class Runner {
 		System.out.println("## User: " + userName);
 	}
 
-	private void printFile(String fileName, long fileSize) {		
+	private void printFile(String fileName, long fileSize) {
 		System.out.println("* " + fileName + " ==> " + fileSize + " bytes");
 	}
 
 	// txt mode filtered report templete
-	private void printFile(String fileName, String userName, long fileSize) {		
+	private void printFile(String fileName, String userName, long fileSize) {
 		System.out.println("* " + fileName + " ==> user " + userName + ", " + fileSize + " bytes");
 	}
 
