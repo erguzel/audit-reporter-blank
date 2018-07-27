@@ -28,6 +28,4 @@ allprojects{
 
 dependencies {
     compile 'com.github.erguzel:cpaar:master-SNAPSHOT'
-    compile 'com.github.erguzel:util:master-SNAPSHOT'
-    compile 'com.github.erguzel:abstraction:master-SNAPSHOT'
 }

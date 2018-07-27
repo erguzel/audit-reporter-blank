@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.erg.abst.cpaar.BareArgumentTypes;
-import com.erg.abst.cpaar.prepare.IParserStarter;
+import com.erg.cpaar.abstraction.BareArgumentTypes;
+import com.erg.cpaar.abstraction.prepare.IParserStarter;
 import com.erg.cpaar.data.Outputs;
 import com.erg.cpaar.prepare.ParseStarter;
 import com.reengen.model.auditreporter.RunnerModel;
@@ -178,7 +178,7 @@ public class Runner {
 				.submit("ListTop")
 				.addFlag("-c")
 				.submit("IsCsvMode")
-				.add(String.class, BareArgumentTypes.path)
+				.add(String.class, BareArgumentTypes.file)
 				.submit("ResourcePaths")
 				.parse(args);
 	}
